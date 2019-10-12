@@ -1,5 +1,6 @@
 from app.main.dtos.coordinate import Coordinate
 from app.main.dtos.issue import Issue
+from app.main.mongo.essentials import EssentialsService
 from app.main.mongo.issue_reports import IssueReportsService
 from app.main.mongo.issues import IssuesService as IssuesDBService
 from app.main.mongo.issues_acknowledgements import IssuesAcknowledgementsService
@@ -27,10 +28,22 @@ class IssuesService:
     @staticmethod
     def get_issue_by_id(issue_id):
         issue = IssuesDBService.get_by_id(issue_id)
+        essentials = list()
+        for essential_id in issue.get('essentials', []):
+            essentials.append(EssentialsService.get_by_id(essential_id))
+        issue['essentials'] = essentials
         issue['acknowledgedVolunteers'] = IssuesService._get_volunteers_for_the_issue(issue_id)
         issue['plusOnes'] = IssuesService._get_plus_ones_for_the_issue(issue_id)
         issue['reports'] = IssuesService._get_reports_for_the_issue(issue_id)
         return issue
+
+    @staticmethod
+    def get_essentials(issue_id):
+        issue = IssuesDBService.get_by_id(issue_id)
+        essentials = list()
+        for essential_id in issue.get('essentials', []):
+            essentials.append(EssentialsService.get_by_id(essential_id))
+        return essentials
 
     @staticmethod
     def _get_reports_for_the_issue(issue_id):

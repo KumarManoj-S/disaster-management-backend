@@ -1,6 +1,7 @@
 from flask_restplus import Namespace, Resource
 from flask import request
 
+from app.main.services.donor import DonorsService
 from app.main.services.issue_reports import IssueReportsService
 from app.main.services.issues import IssuesService
 from app.main.services.issues_acknowledgement import IssuesAcknowledgementsService
@@ -87,3 +88,10 @@ class ReportIssue(Resource):
         report_id = IssueReportsService.report(reporter_id=reporter_id, phone_no=phone_no,
                                                issue_id=issue_id, name=name)
         return {'status': 'success', 'insertedId': report_id}
+
+
+@api.route('issues/<issue_id>/donor-recommendations')
+class ReportIssue(Resource):
+    def get(self, issue_id):
+        donors = DonorsService.get_donor_recommendations(issue_id)
+        return {'donors': donors}

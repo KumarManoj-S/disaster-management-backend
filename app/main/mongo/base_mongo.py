@@ -34,7 +34,7 @@ class BaseMongo:
 
     @staticmethod
     def replace_one(collection, filters, replacement):
-        update_result = collection.replace_one(filters, replacement)
+        update_result = collection.replace_one(filters, replacement, upsert=True)
 
         if update_result.acknowledged:
             return True

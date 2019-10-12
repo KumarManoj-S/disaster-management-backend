@@ -8,3 +8,4 @@ class Issue(BaseDTO):
         self.phone_no = obj.get('phoneNo')
         self.address = obj.get('address')
         self.location = Location(obj.get('lat'), obj.get('long'))
+        self.essentials = obj.get('essentials')
