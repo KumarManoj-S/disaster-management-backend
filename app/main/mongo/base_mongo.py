@@ -32,4 +32,13 @@ class BaseMongo:
         cursor = collection.aggregate(filters)
         return cursor
 
+    @staticmethod
+    def replace_one(collection, filters, replacement):
+        update_result = collection.replace_one(filters, replacement)
+
+        if update_result.acknowledged:
+            return True
+
+        raise Exception('MONGODB_ERROR')
+
 
