@@ -27,4 +27,9 @@ class BaseMongo:
         document['id'] = str(document.pop('_id'))
         return document
 
+    @staticmethod
+    def aggregate(collection, filters):
+        cursor = collection.aggregate(filters)
+        return cursor
+
 
