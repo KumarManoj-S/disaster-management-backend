@@ -18,11 +18,16 @@ class IssuesService:
         return str(issue_id)
 
     @staticmethod
-    def get_all_issues(coordinate):
+    def get_all_issues(coordinate=None):
         if not coordinate:
             issues = IssuesDBService.get_all()
         else:
             issues = IssuesService.get_issues_based_on_location(coordinate)
+        for issue in issues:
+            issue_id = issue['id']
+            issue['acknowledgedVolunteers'] = IssuesService._get_volunteers_for_the_issue(issue_id)
+            issue['plusOnes'] = IssuesService._get_plus_ones_for_the_issue(issue_id)
+            issue['reports'] = IssuesService._get_reports_for_the_issue(issue_id)
         return issues
 
     @staticmethod
@@ -102,6 +107,11 @@ class IssuesService:
     def get_issues_based_on_location(coordinate):
         coordinate_dto = Coordinate(coordinate)
         issues = IssuesDBService.get_all_issues_based_on_coordinates(coordinate_dto)
+        for issue in issues:
+            issue_id = issue['id']
+            issue['acknowledgedVolunteers'] = IssuesService._get_volunteers_for_the_issue(issue_id)
+            issue['plusOnes'] = IssuesService._get_plus_ones_for_the_issue(issue_id)
+            issue['reports'] = IssuesService._get_reports_for_the_issue(issue_id)
         return issues
 
     @staticmethod

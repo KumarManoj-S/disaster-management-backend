@@ -2,6 +2,7 @@ from app.main.dtos.donor import Donor
 from app.main.dtos.volunteer import Volunteer
 from app.main.mongo.donate import DonateService
 from app.main.mongo.donor import DonarsService as DonarsDBService
+from app.main.mongo.essentials import EssentialsService
 from app.main.services.issues import IssuesService
 
 
@@ -37,4 +38,26 @@ class DonorsService:
             donors.append(DonarsDBService.get_by_id(donor_id))
         return donors
 
+    @staticmethod
+    def get_essential_requirements():
+        issues = IssuesService.get_all_issues()
+        essentials_count_maps = [
+            {"essentials": issue.get('essentials', []), 'noOfPeople': issue.get('noOfPeople', 1)}
+            for issue in issues
+        ]
 
+        essentials = {}
+        for essentials_count_map in essentials_count_maps:
+            for essential in essentials_count_map['essentials']:
+                if not essentials.get(essential):
+                    essentials[essential] = essentials_count_map["noOfPeople"]
+                else:
+                    essentials[essential] += essentials_count_map["noOfPeople"]
+
+        essential_list = list()
+        for essential_id, quantity in essentials.items():
+            ess = EssentialsService.get_by_id(essential_id)
+            ess['quantity'] = quantity
+            essential_list.append(ess)
+
+        return essential_list

@@ -36,3 +36,12 @@ class GetDonors(Resource):
     def get(self, donor_id):
         items = DonateService.get_donations(donor_id)
         return {'items': items}
+
+
+@api.route('donors/<donor_id>/essential-requirements')
+class GetEssentialRequirements(Resource):
+    def get(self, donor_id):
+        essentials = DonorsService.get_essential_requirements()
+        return {
+            "essentialRequirements": essentials
+        }
