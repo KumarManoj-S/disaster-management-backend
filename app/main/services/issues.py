@@ -1,8 +1,10 @@
 from app.main.dtos.coordinate import Coordinate
 from app.main.dtos.issue import Issue
+from app.main.mongo.issue_reports import IssueReportsService
 from app.main.mongo.issues import IssuesService as IssuesDBService
 from app.main.mongo.issues_acknowledgements import IssuesAcknowledgementsService
 from app.main.mongo.issues_plus_one import IssuesPlusOneService
+from app.main.mongo.reporters import ReportersService
 from app.main.mongo.victims import VictimsService
 from app.main.mongo.volunteers import VolunteersService
 
@@ -25,12 +27,33 @@ class IssuesService:
     @staticmethod
     def get_issue_by_id(issue_id):
         issue = IssuesDBService.get_by_id(issue_id)
-        acknowledged_volunteers = IssuesAcknowledgementsService.get_all_acknowledgements_for_the_issue(issue_id)
-        volunteer_ids = [acknowledged_volunteer['volunteer_id'] for acknowledged_volunteer in acknowledged_volunteers]
-        volunteers = list()
-        for volunteer_id in volunteer_ids:
-            volunteers.append(VolunteersService.get_by_id(volunteer_id))
-        issue['acknowledgedVolunteers'] = volunteers
+        issue['acknowledgedVolunteers'] = IssuesService._get_volunteers_for_the_issue(issue_id)
+        issue['plusOnes'] = IssuesService._get_plus_ones_for_the_issue(issue_id)
+        issue['reports'] = IssuesService._get_reports_for_the_issue(issue_id)
+        return issue
+
+    @staticmethod
+    def _get_reports_for_the_issue(issue_id):
+        reports = IssueReportsService.get_all_reports_for_the_issue(issue_id)
+        total_reports = len(reports)
+        verified_reporter_ids = [
+            report.get('reporter_id')
+            for report in reports
+            if report.get('reporter_id')
+        ]
+        reporters = list()
+        for reporter_id in verified_reporter_ids:
+            reporters.append(ReportersService.get_by_id(reporter_id))
+        report_obj = {
+            "totalReports": total_reports,
+            "anonymousReports": total_reports - len(reporters),
+            "verifiedReports": len(reporters),
+            "verifiedReportReporters": reporters,
+        }
+        return report_obj
+
+    @staticmethod
+    def _get_plus_ones_for_the_issue(issue_id):
         plus_one_victims = IssuesPlusOneService.get_all_plus_ones_for_the_issue(issue_id)
         total_plus_ones = len(plus_one_victims)
         verified_plus_one_victim_ids = [
@@ -41,13 +64,26 @@ class IssuesService:
         victims = list()
         for victim_id in verified_plus_one_victim_ids:
             victims.append(VictimsService.get_by_id(victim_id))
-        issue['plusOnes'] = {
+        plus_ones = {
             "totalPlusOnes": total_plus_ones,
             "anonymousPlusOnes": total_plus_ones - len(victims),
             "verifiedPlusOnes": len(victims),
             "verifiedPlusOneVictims": victims,
         }
-        return issue
+        return plus_ones
+
+    @staticmethod
+    def _get_volunteers_for_the_issue(issue_id):
+        acknowledged_volunteers = IssuesAcknowledgementsService.get_all_acknowledgements_for_the_issue(issue_id)
+        volunteer_ids = [acknowledged_volunteer['volunteer_id'] for acknowledged_volunteer in acknowledged_volunteers]
+        volunteers_list = list()
+        for volunteer_id in volunteer_ids:
+            volunteers_list.append(VolunteersService.get_by_id(volunteer_id))
+        volunteers = {
+            'totalAcknowledgements': len(volunteers_list),
+            'verifiedAcknowledgedVolunteers': volunteers_list
+        }
+        return volunteers
 
     @staticmethod
     def get_issues_based_on_location(coordinate):

@@ -1,6 +1,7 @@
 from flask_restplus import Namespace, Resource
 from flask import request
 
+from app.main.services.issue_reports import IssueReportsService
 from app.main.services.issues import IssuesService
 from app.main.services.issues_acknowledgement import IssuesAcknowledgementsService
 from app.main.services.issues_plus_one import IssuesPlusOnesService
@@ -69,8 +70,20 @@ class PlusOneIssue(Resource):
     def post(self, issue_id):
         victim = request.json or {}
         phone_no = victim.get('phoneNo')
-        volunteer_id = victim.get('victimId')
+        victim_id = victim.get('victimId')
         name = victim.get('name')
-        acknowledgement_id = IssuesPlusOnesService.plus_one(victim_id=volunteer_id, phone_no=phone_no,
-                                                            issue_id=issue_id, name=name)
-        return {'status': 'success', 'insertedId': acknowledgement_id}
+        plus_one_id = IssuesPlusOnesService.plus_one(victim_id=victim_id, phone_no=phone_no,
+                                                     issue_id=issue_id, name=name)
+        return {'status': 'success', 'insertedId': plus_one_id}
+
+
+@api.route('issues/<issue_id>/report')
+class ReportIssue(Resource):
+    def post(self, issue_id):
+        reporter = request.json or {}
+        phone_no = reporter.get('phoneNo')
+        reporter_id = reporter.get('reporterId')
+        name = reporter.get('name')
+        report_id = IssueReportsService.report(reporter_id=reporter_id, phone_no=phone_no,
+                                               issue_id=issue_id, name=name)
+        return {'status': 'success', 'insertedId': report_id}
