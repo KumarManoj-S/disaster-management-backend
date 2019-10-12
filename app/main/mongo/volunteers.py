@@ -29,3 +29,8 @@ class VolunteersService:
     def get_by_email(email):
         volunteer_collection = VolunteersService.get_collection()
         return BaseMongo.find_one(volunteer_collection, {'emailId': email})
+
+    @staticmethod
+    def get_volunteer_id_by_phone_no(phone_no):
+        volunteer_collection = VolunteersService.get_collection()
+        return BaseMongo.find_one(volunteer_collection, {'phoneNo': phone_no})
