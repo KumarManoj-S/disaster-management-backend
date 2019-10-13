@@ -50,9 +50,9 @@ class DonorsService:
         for essentials_count_map in essentials_count_maps:
             for essential in essentials_count_map['essentials']:
                 if not essentials.get(essential):
-                    essentials[essential] = essentials_count_map["noOfPeople"]
+                    essentials[essential] = int(essentials_count_map["noOfPeople"])
                 else:
-                    essentials[essential] += essentials_count_map["noOfPeople"]
+                    essentials[essential] += int(essentials_count_map["noOfPeople"])
 
         essential_list = list()
         for essential_id, quantity in essentials.items():

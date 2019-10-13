@@ -27,3 +27,9 @@ class IssuesAcknowledgementsService:
         filters = {'issue_id': issue_id, "volunteer_id": volunteer_id}
         return BaseMongo.find_one(collection, filters)
 
+    @staticmethod
+    def get_all_acknowledgements_for_the_volunteer(volunteer_id):
+        collection = IssuesAcknowledgementsService.get_collection()
+        filters = {'volunteer_id': volunteer_id}
+        return BaseMongo.find_all(collection, filters)
+

@@ -18,6 +18,10 @@ class IssuesPlusOnesService:
                 victim_id = str(victim_id)
         if not victim_id:
             victim_id = kwargs.get('victim_id')
+        if not victim_id:
+            plus_one_id = IssuesPlusOneService.add_plus_one(
+                {"victim_id": victim_id, "issue_id": issue_id})
+            return str(plus_one_id)
         is_plus_one_present = IssuesPlusOneService.is_plus_one_present(issue_id, victim_id)
         if not is_plus_one_present:
             plus_one_id = IssuesPlusOneService.add_plus_one(

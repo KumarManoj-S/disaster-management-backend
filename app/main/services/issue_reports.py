@@ -18,6 +18,10 @@ class IssueReportsService:
                 reporter_id = str(reporter_id)
         if not reporter_id:
             reporter_id = kwargs.get('reporter_id')
+        if not reporter_id:
+            plus_one_id = IssueReportsDBService.add_report(
+                {"reporter_id": reporter_id, "issue_id": issue_id})
+            return str(plus_one_id)
         is_report_present = IssueReportsDBService.is_report_present(issue_id, reporter_id)
         if not is_report_present:
             plus_one_id = IssueReportsDBService.add_report(
