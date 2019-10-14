@@ -1,4 +1,4 @@
-# LYNK HACK - FLOOD RELIEF
+# Disaster Management API
 
 ## Getting setup locally
 
