@@ -4,7 +4,7 @@ from app.main.config import Config
 
 class MongoConnection:
     __instance = None
-    mongo_connection_options = {'ssl': False, 'serverSelectionTimeoutMS': 5000, 'connectTimeoutMS': 5000}
+    mongo_connection_options = {'ssl': True, 'serverSelectionTimeoutMS': 5000, 'connectTimeoutMS': 5000}
 
     @staticmethod
     def get_instance():
